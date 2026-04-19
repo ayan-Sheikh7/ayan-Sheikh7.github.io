@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ayan — AI Prompt Engineer</title>
+<title>Ayan Sheikh — AI Prompt Engineer</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -103,6 +103,125 @@
     padding: 0 40px 60px;
     position: relative;
     overflow: hidden;
+  }
+
+  /* FLOATING WORDS ANIMATION */
+  .floating-words {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 65%;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .float-word {
+    position: absolute;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(184,255,87,0.12);
+    animation: floatUp linear infinite;
+    white-space: nowrap;
+  }
+
+  @keyframes floatUp {
+    0% { transform: translateY(100px); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-200px); opacity: 0; }
+  }
+
+  /* GLITCH TEXT CENTER */
+  .hero-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -60%);
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .glitch-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(60px, 18vw, 200px);
+    color: rgba(255,255,255,0.03);
+    letter-spacing: 12px;
+    position: relative;
+    animation: glitchIdle 6s ease infinite;
+  }
+
+  .glitch-text::before,
+  .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0; right: 0;
+  }
+
+  .glitch-text::before {
+    color: rgba(184,255,87,0.04);
+    animation: glitch1 8s ease infinite;
+    clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%);
+  }
+
+  .glitch-text::after {
+    color: rgba(87,200,255,0.03);
+    animation: glitch2 7s ease infinite;
+    clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%);
+  }
+
+  @keyframes glitchIdle {
+    0%, 94%, 100% { transform: none; }
+    95% { transform: translateX(-3px); }
+    96% { transform: translateX(3px); }
+    97% { transform: translateX(-1px); }
+  }
+
+  @keyframes glitch1 {
+    0%, 94%, 100% { transform: none; opacity: 1; }
+    95% { transform: translateX(4px) skewX(2deg); opacity: 0.8; }
+    97% { transform: translateX(-4px); }
+  }
+
+  @keyframes glitch2 {
+    0%, 92%, 100% { transform: none; opacity: 1; }
+    93% { transform: translateX(-3px) skewX(-1deg); opacity: 0.8; }
+    95% { transform: translateX(3px); }
+  }
+
+  /* SCAN LINE */
+  .scanline {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, rgba(184,255,87,0.15), transparent);
+    animation: scan 4s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes scan {
+    0% { top: 0%; opacity: 0; }
+    5% { opacity: 1; }
+    95% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+  }
+
+  /* TYPEWRITER */
+  .typewriter {
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid var(--accent);
+    animation: typing 3.5s steps(40, end) 0.5s both, blink 0.8s step-end infinite;
+    max-width: fit-content;
+  }
+
+  @keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+
+  @keyframes blink {
+    50% { border-color: transparent; }
   }
 
   .hero-bg {
@@ -753,8 +872,13 @@
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
+  <div class="scanline"></div>
+  <div class="floating-words" id="floatingWords"></div>
+  <div class="hero-center">
+    <div class="glitch-text" data-text="AYAN">AYAN</div>
+  </div>
 
-  <div class="hero-tag">AI Prompt Engineer & Automation Specialist</div>
+  <div class="hero-tag typewriter">AI Prompt Engineer &amp; Automation Specialist</div>
 
   <h1 class="hero-name">
     AY<span class="accent">AN</span>
@@ -1008,22 +1132,22 @@
   <h2 class="section-title">Certifications</h2>
 
   <div class="certs-grid">
-    <div class="cert-card fade-up">
+    <a class="cert-card fade-up" href="https://verify.skilljar.com/c/7frinyv362hr" target="_blank" style="text-decoration:none; cursor:none;">
       <div class="cert-icon">⚡</div>
       <div>
         <div class="cert-title">Claude Code in Action</div>
         <div class="cert-org">Anthropic Academy</div>
-        <div class="cert-year">2026</div>
+        <div class="cert-year">2026 · Click to Verify</div>
       </div>
-    </div>
-    <div class="cert-card fade-up">
+    </a>
+    <a class="cert-card fade-up" href="https://verify.skilljar.com/c/gayibgy2d5bi" target="_blank" style="text-decoration:none; cursor:none;">
       <div class="cert-icon">🧠</div>
       <div>
         <div class="cert-title">Claude 101</div>
         <div class="cert-org">Anthropic Academy</div>
-        <div class="cert-year">2026</div>
+        <div class="cert-year">2026 · Click to Verify</div>
       </div>
-    </div>
+    </a>
     <div class="cert-card fade-up">
       <div class="cert-icon">🎓</div>
       <div>
@@ -1045,19 +1169,39 @@
   </p>
   <div class="contact-links">
     <a href="mailto:ab7ayan@gmail.com" class="contact-btn btn-primary">ab7ayan@gmail.com</a>
-    <a href="https://www.linkedin.com/in/ab-ayan-36508836b" target="_blank" class="contact-btn btn-ghost">LinkedIn</a>
+    <a href="https://www.linkedin.com/in/ayan-shaikh-36508836b" target="_blank" class="contact-btn btn-ghost">LinkedIn</a>
     <a href="https://www.instagram.com/anya.roseex" target="_blank" class="contact-btn btn-ghost">Anya Rose</a>
   </div>
 </section>
 
 <!-- FOOTER -->
 <footer>
-  <div class="logo">AYAN</div>
+  <div class="logo">AYAN SHEIKH</div>
   <p>© 2026 · AI Prompt Engineer · Indore, India</p>
   <p>Built with zero frameworks. Just code.</p>
 </footer>
 
 <script>
+  // Floating words animation
+  const words = ['Prompt Engineering','Claude API','Midjourney','AI Automation','Generative AI','LLM','Character Consistency','n8n','Workflow','Virtual Influencer','Claude Code','Anthropic','Flux','Agent Pipeline','Content Strategy','DALL-E','AI Systems'];
+  const container = document.getElementById('floatingWords');
+  function spawnWord() {
+    const word = document.createElement('span');
+    word.className = 'float-word';
+    word.textContent = words[Math.floor(Math.random() * words.length)];
+    word.style.left = (Math.random() * 90) + '%';
+    word.style.bottom = '-30px';
+    const duration = 8 + Math.random() * 10;
+    word.style.animationDuration = duration + 's';
+    word.style.animationDelay = '0s';
+    word.style.fontSize = (9 + Math.random() * 5) + 'px';
+    word.style.opacity = (0.06 + Math.random() * 0.10).toString();
+    container.appendChild(word);
+    setTimeout(() => word.remove(), duration * 1000);
+  }
+  setInterval(spawnWord, 900);
+  for(let i = 0; i < 8; i++) setTimeout(spawnWord, i * 300);
+
   // Custom cursor
   const cursor = document.getElementById('cursor');
   const ring = document.getElementById('cursorRing');
