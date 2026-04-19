@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ayan — AI Prompt Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080808;
+    --surface: #0f0f0f;
+    --card: #141414;
+    --border: #1e1e1e;
+    --accent: #b8ff57;
+    --accent2: #ff4d4d;
+    --accent3: #57c8ff;
+    --text: #f0f0f0;
+    --muted: #555;
+    --mid: #888;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    position: fixed;
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s ease;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 32px; height: 32px;
+    border: 1px solid rgba(184,255,87,0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transition: all 0.15s ease;
+    transform: translate(-50%, -50%);
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background: rgba(8,8,8,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 4px;
+    color: var(--text);
+  }
+
+  .nav-logo span { color: var(--accent); }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 40px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 60% 50% at 80% 50%, rgba(184,255,87,0.04) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(87,200,255,0.03) 0%, transparent 70%);
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+  }
+
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 30px; height: 1px;
+    background: var(--accent);
+  }
+
+  .hero-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(80px, 15vw, 180px);
+    line-height: 0.9;
+    letter-spacing: -2px;
+    color: var(--text);
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-name .accent { color: var(--accent); }
+
+  .hero-sub {
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .hero-desc {
+    font-size: 15px;
+    color: var(--mid);
+    max-width: 420px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 32px;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 32px;
+    right: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    animation: scrollDown 2s ease infinite;
+  }
+
+  @keyframes scrollDown {
+    0% { transform: scaleY(0); transform-origin: top; }
+    50% { transform: scaleY(1); transform-origin: top; }
+    51% { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+
+  /* SECTION BASE */
+  section {
+    padding: 100px 40px;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 20px; height: 1px;
+    background: var(--accent);
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 0.95;
+    color: var(--text);
+    margin-bottom: 48px;
+  }
+
+  /* ABOUT */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+
+  .about-text p {
+    font-size: 15px;
+    line-height: 1.85;
+    color: var(--mid);
+    font-weight: 300;
+    margin-bottom: 16px;
+  }
+
+  .about-text p strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .skills-block {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .skill-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .skill-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--mid);
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .skill-bar {
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .skill-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1s ease;
+  }
+
+  .skill-fill.animate { transform: scaleX(1); }
+
+  /* PROJECTS */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2px;
+  }
+
+  .project-card {
+    background: var(--card);
+    padding: 36px;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+    cursor: none;
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+
+  .project-card:hover::before { transform: scaleX(1); }
+  .project-card:hover { border-color: #2a2a2a; transform: translateY(-4px); }
+
+  .project-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: var(--border);
+    line-height: 1;
+    margin-bottom: 20px;
+    transition: color 0.3s;
+  }
+
+  .project-card:hover .project-num { color: #2a2a2a; }
+
+  .project-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .project-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 1px;
+    color: var(--text);
+    margin-bottom: 12px;
+    line-height: 1;
+  }
+
+  .project-desc {
+    font-size: 13px;
+    color: var(--mid);
+    line-height: 1.7;
+    font-weight: 300;
+    margin-bottom: 20px;
+  }
+
+  .project-metrics {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .metric {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .metric-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .metric-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .project-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tool-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    padding: 3px 8px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    border-radius: 2px;
+  }
+
+  /* FEATURED — Anya Rose */
+  .featured-section {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .featured-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    max-width: 1200px;
+  }
+
+  .featured-content .big-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(60px, 10vw, 120px);
+    line-height: 0.9;
+    color: var(--text);
+    margin-bottom: 24px;
+  }
+
+  .featured-content .big-label span { color: var(--accent); }
+
+  .featured-content p {
+    font-size: 14px;
+    color: var(--mid);
+    line-height: 1.8;
+    font-weight: 300;
+    margin-bottom: 20px;
+  }
+
+  .feat-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+
+  .feat-stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .feat-stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .featured-visual {
+    position: relative;
+  }
+
+  .img-frame {
+    width: 100%;
+    aspect-ratio: 3/4;
+    background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .img-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(184,255,87,0.03) 0%, transparent 60%);
+  }
+
+  .img-frame-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: #222;
+    letter-spacing: 4px;
+    text-align: center;
+  }
+
+  .img-frame-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: #333;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .img-badge {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(184,255,87,0.1);
+    border: 1px solid rgba(184,255,87,0.3);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 6px 12px;
+    letter-spacing: 1px;
+  }
+
+  /* CERTS */
+  .certs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .cert-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 28px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    transition: border-color 0.3s;
+  }
+
+  .cert-card:hover { border-color: var(--accent); }
+
+  .cert-icon {
+    width: 40px; height: 40px;
+    background: rgba(184,255,87,0.08);
+    border: 1px solid rgba(184,255,87,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 18px;
+  }
+
+  .cert-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .cert-org {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .cert-year {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* CONTACT */
+  .contact-section {
+    text-align: center;
+    padding: 120px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .contact-section::before {
+    content: 'HIRE ME';
+    position: absolute;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(80px, 20vw, 240px);
+    color: rgba(255,255,255,0.015);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    pointer-events: none;
+    letter-spacing: 8px;
+  }
+
+  .contact-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 8vw, 96px);
+    line-height: 0.95;
+    margin-bottom: 24px;
+  }
+
+  .contact-title span { color: var(--accent); }
+
+  .contact-sub {
+    font-size: 15px;
+    color: var(--mid);
+    max-width: 480px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .contact-links {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .contact-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 14px 28px;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: all 0.2s;
+    cursor: none;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #080808;
+    font-weight: 500;
+  }
+
+  .btn-primary:hover { background: #a0e040; }
+
+  .btn-ghost {
+    border: 1px solid var(--border);
+    color: var(--mid);
+  }
+
+  .btn-ghost:hover { border-color: var(--mid); color: var(--text); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  footer .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 4px;
+    color: var(--muted);
+  }
+
+  footer p {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  /* DIVIDER */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+    margin: 0 40px;
+    width: calc(100% - 80px);
+  }
+
+  /* ANIMATIONS */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    .hero { padding: 0 20px 48px; }
+    section { padding: 72px 20px; }
+    .about-grid { grid-template-columns: 1fr; gap: 40px; }
+    .featured-inner { grid-template-columns: 1fr; }
+    .featured-visual { display: none; }
+    footer { padding: 20px; flex-direction: column; text-align: center; }
+    .contact-section { padding: 80px 20px; }
+    .hero-stats { gap: 20px; }
+    .scroll-hint { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">AY<span>AN</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#certs">Certifications</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-tag">AI Prompt Engineer & Automation Specialist</div>
+
+  <h1 class="hero-name">
+    AY<span class="accent">AN</span>
+  </h1>
+
+  <div class="hero-sub">
+    <p class="hero-desc">
+      I build AI systems that ship. Prompt pipelines, automation workflows, virtual influencers — 
+      all engineered from scratch with zero team, zero degree, measurable results.
+    </p>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num">2.2K</span>
+        <span class="stat-label">YouTube Subs</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">239K</span>
+        <span class="stat-label">Views / 28 Days</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">1K+</span>
+        <span class="stat-label">Influencer Followers</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label">Who I Am</div>
+  <h2 class="section-title">Self-Built.<br>AI-Native.</h2>
+
+  <div class="about-grid">
+    <div class="about-text fade-up">
+      <p>
+        I'm Ayan — a 20-year-old AI automation specialist based in <strong>Indore, India</strong>. 
+        I've spent the last year building production-grade AI systems independently, without a degree, 
+        without a team, and without shortcuts.
+      </p>
+      <p>
+        My work sits at the intersection of <strong>generative AI, prompt engineering, and content automation</strong>. 
+        I don't just use AI tools — I design systems around them. Character consistency frameworks, 
+        multi-agent pipelines, automated content workflows — built to produce real, repeatable output.
+      </p>
+      <p>
+        Currently open to <strong>remote roles</strong> in AI automation, prompt engineering, 
+        generative AI content, and workflow design.
+      </p>
+    </div>
+
+    <div class="skills-block fade-up">
+      <div class="skill-row">
+        <div class="skill-name"><span>Prompt Engineering</span><span>95%</span></div>
+        <div class="skill-bar"><div class="skill-fill" style="width:95%"></div></div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-name"><span>Claude / Anthropic API</span><span>90%</span></div>
+        <div class="skill-bar"><div class="skill-fill" style="width:90%"></div></div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-name"><span>Midjourney / Flux</span><span>92%</span></div>
+        <div class="skill-bar"><div class="skill-fill" style="width:92%"></div></div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-name"><span>AI Workflow Automation</span><span>85%</span></div>
+        <div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-name"><span>Content Strategy</span><span>80%</span></div>
+        <div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-name"><span>HTML / CSS / JS</span><span>72%</span></div>
+        <div class="skill-bar"><div class="skill-fill" style="width:72%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED — ANYA ROSE -->
+<section class="featured-section" id="anya">
+  <div class="featured-inner fade-up">
+    <div class="featured-content">
+      <div class="section-label">Featured Project</div>
+      <div class="big-label">ANYA<br><span>ROSE</span></div>
+      <p>
+        A fully consistent AI virtual influencer built from scratch using advanced Midjourney 
+        prompt engineering. Achieved near-100% facial consistency across all content through 
+        a custom prompt architecture controlling lighting physics, skin textures, 
+        wardrobe, and emotional expression.
+      </p>
+      <p>
+        Built a complete character bible and reusable prompt library — no model training required. 
+        Every image is production-ready, brand-safe, and visually coherent across different 
+        scenes, outfits, and environments.
+      </p>
+      <div class="feat-stats">
+        <div>
+          <div class="feat-stat-num">1K+</div>
+          <div class="feat-stat-label">Followers</div>
+        </div>
+        <div>
+          <div class="feat-stat-num">18+</div>
+          <div class="feat-stat-label">Posts</div>
+        </div>
+        <div>
+          <div class="feat-stat-num">1.1K</div>
+          <div class="feat-stat-label">Monthly Views</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="featured-visual">
+      <div class="img-frame">
+        <div class="img-frame-text">ANYA<br>ROSE</div>
+        <div class="img-frame-sub">@anya.roseex · Instagram</div>
+        <div class="img-badge">AI Generated · 100% Consistent</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-label">Work</div>
+  <h2 class="section-title">Projects &<br>Experience</h2>
+
+  <div class="projects-grid">
+
+    <div class="project-card fade-up">
+      <div class="project-num">01</div>
+      <div class="project-tag">Virtual Influencer · 2025–Present</div>
+      <div class="project-title">Anya Rose</div>
+      <p class="project-desc">
+        Built a fully consistent AI virtual influencer from scratch. 
+        Engineered prompt systems for facial consistency, lighting physics, 
+        skin texture, and wardrobe — all without model fine-tuning.
+      </p>
+      <div class="project-metrics">
+        <div class="metric">
+          <div class="metric-val">1K+</div>
+          <div class="metric-label">Followers</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val">100%</div>
+          <div class="metric-label">Consistency</div>
+        </div>
+      </div>
+      <div class="project-tools">
+        <span class="tool-tag">Midjourney</span>
+        <span class="tool-tag">Flux</span>
+        <span class="tool-tag">Prompt Engineering</span>
+        <span class="tool-tag">Character Systems</span>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
+      <div class="project-num">02</div>
+      <div class="project-tag">AI Automation · 2026–Present</div>
+      <div class="project-title">AI Talent Roster</div>
+      <p class="project-desc">
+        Automated digital talent creation and management pipeline using Claude Code 
+        and multi-agent architecture. Reduced manual content production by 80% 
+        through modular prompt chains and autonomous evaluation loops.
+      </p>
+      <div class="project-metrics">
+        <div class="metric">
+          <div class="metric-val">80%</div>
+          <div class="metric-label">Time Saved</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val">Multi</div>
+          <div class="metric-label">Agent System</div>
+        </div>
+      </div>
+      <div class="project-tools">
+        <span class="tool-tag">Claude Code</span>
+        <span class="tool-tag">Anthropic API</span>
+        <span class="tool-tag">Agent Pipelines</span>
+        <span class="tool-tag">n8n</span>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
+      <div class="project-num">03</div>
+      <div class="project-tag">YouTube · 2025–Present</div>
+      <div class="project-title">Frosty Delights Ab7</div>
+      <p class="project-desc">
+        Grew a food & beverage YouTube Shorts channel to 2,200+ subscribers 
+        with 239K views in the last 28 days — driven by AI-assisted content 
+        strategy and data-driven short-form optimization.
+      </p>
+      <div class="project-metrics">
+        <div class="metric">
+          <div class="metric-val">2.2K</div>
+          <div class="metric-label">Subscribers</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val">239K</div>
+          <div class="metric-label">Views / 28 Days</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val">1.1M</div>
+          <div class="metric-label">Top Short Views</div>
+        </div>
+      </div>
+      <div class="project-tools">
+        <span class="tool-tag">YouTube Shorts</span>
+        <span class="tool-tag">Content Strategy</span>
+        <span class="tool-tag">SEO Optimization</span>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
+      <div class="project-num">04</div>
+      <div class="project-tag">Web Development · 2026</div>
+      <div class="project-title">The Stack</div>
+      <p class="project-desc">
+        Built a polished, interactive AI tools comparison website from scratch — 
+        no frameworks. Featured expandable tool cards, a comparison engine, 
+        user quiz, and GSAP scroll animations with an editorial design direction.
+      </p>
+      <div class="project-metrics">
+        <div class="metric">
+          <div class="metric-val">8</div>
+          <div class="metric-label">AI Tools</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val">0</div>
+          <div class="metric-label">Frameworks Used</div>
+        </div>
+      </div>
+      <div class="project-tools">
+        <span class="tool-tag">HTML / CSS / JS</span>
+        <span class="tool-tag">GSAP</span>
+        <span class="tool-tag">Editorial Design</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CERTS -->
+<section id="certs" style="background: var(--surface); border-top: 1px solid var(--border);">
+  <div class="section-label">Credentials</div>
+  <h2 class="section-title">Certifications</h2>
+
+  <div class="certs-grid">
+    <div class="cert-card fade-up">
+      <div class="cert-icon">⚡</div>
+      <div>
+        <div class="cert-title">Claude Code in Action</div>
+        <div class="cert-org">Anthropic Academy</div>
+        <div class="cert-year">2026</div>
+      </div>
+    </div>
+    <div class="cert-card fade-up">
+      <div class="cert-icon">🧠</div>
+      <div>
+        <div class="cert-title">Claude 101</div>
+        <div class="cert-org">Anthropic Academy</div>
+        <div class="cert-year">2026</div>
+      </div>
+    </div>
+    <div class="cert-card fade-up">
+      <div class="cert-icon">🎓</div>
+      <div>
+        <div class="cert-title">High School Graduate</div>
+        <div class="cert-org">Self-directed Technical Education</div>
+        <div class="cert-year">2026 · AI, Automation, Web Dev Focus</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="section-label" style="justify-content:center; margin-bottom:16px;">Available for Work</div>
+  <h2 class="contact-title">Let's Build<br><span>Something.</span></h2>
+  <p class="contact-sub">
+    Open to remote roles in AI automation, prompt engineering, generative AI content, 
+    and workflow design. Based in Indore — working with teams worldwide.
+  </p>
+  <div class="contact-links">
+    <a href="mailto:ab7ayan@gmail.com" class="contact-btn btn-primary">ab7ayan@gmail.com</a>
+    <a href="https://www.linkedin.com/in/ab-ayan-36508836b" target="_blank" class="contact-btn btn-ghost">LinkedIn</a>
+    <a href="https://www.instagram.com/anya.roseex" target="_blank" class="contact-btn btn-ghost">Anya Rose</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo">AYAN</div>
+  <p>© 2026 · AI Prompt Engineer · Indore, India</p>
+  <p>Built with zero frameworks. Just code.</p>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+
+  function animateRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform = 'translate(-50%,-50%) scale(2.5)';
+      ring.style.transform = 'translate(-50%,-50%) scale(1.5)';
+      ring.style.borderColor = 'rgba(184,255,87,0.8)';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+      ring.style.transform = 'translate(-50%,-50%) scale(1)';
+      ring.style.borderColor = 'rgba(184,255,87,0.4)';
+    });
+  });
+
+  // Scroll animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+          // Animate skill bars
+          entry.target.querySelectorAll('.skill-fill').forEach(bar => {
+            bar.classList.add('animate');
+          });
+        }, 100);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // Stagger project cards
+  document.querySelectorAll('.project-card').forEach((card, i) => {
+    card.style.transitionDelay = (i * 0.08) + 's';
+  });
+</script>
+</body>
+</html>
